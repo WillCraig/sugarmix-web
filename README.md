@@ -16,3 +16,11 @@ A Vite React single-page calculator for planning sucrose-based endurance drink m
 ## Notes
 
 Application code lives in `src/`. The `suygar/` directory is an older standalone prototype/reference and is intentionally ignored by production linting and formatting.
+
+## GitHub Pages Deployment
+
+The repository includes `.github/workflows/deploy.yml`. On pushes to `main`, GitHub Actions installs dependencies, checks formatting, lints, runs tests, builds the Vite app, uploads `dist/`, and deploys it to GitHub Pages.
+
+In GitHub, set **Settings > Pages > Build and deployment > Source** to **GitHub Actions**.
+
+The Vite asset base is set automatically for project Pages URLs like `https://OWNER.github.io/sugarmix-web/`. If the site is deployed at a custom root path, set `VITE_BASE_PATH` in the workflow build step.
