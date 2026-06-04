@@ -27,7 +27,7 @@ export default function InputPanel({
             step={50}
           />
           <div className="chips">
-            {[500, 600, 750, 950].map((v) => (
+            {[100, 250, 500, 600, 750, 950].map((v) => (
               <button
                 key={v}
                 type="button"
