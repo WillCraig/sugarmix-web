@@ -1,3 +1,5 @@
 dist
 node_modules
 suygar
+.svelte-kit
+package-lock.json

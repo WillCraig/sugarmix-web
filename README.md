@@ -1,26 +1,26 @@
-# SugarMix Web
+# SugarMix
 
-A Vite React single-page calculator for planning sucrose-based endurance drink mixes.
+A mobile-first SvelteKit calculator for planning plain-sugar endurance drink
+mixes. It supports ride-based fueling plans and direct bottle recipes, reports
+the resulting concentration, and gives practical mixing guidance around the
+conservative 900 g/L target.
 
 ## Commands
 
-- `npm install` installs dependencies from `package-lock.json`.
-- `npm run dev` starts the local Vite development server.
-- `npm run build` creates the production bundle in `dist/`.
-- `npm run preview` serves the production build locally.
-- `npm run lint` runs ESLint on production app code.
-- `npm run format:check` checks Prettier formatting.
-- `npm run format` formats the repository with Prettier.
-- `npm test` runs calculator unit tests with Node's built-in test runner.
+- `pnpm install` installs dependencies from the pinned lockfile.
+- `pnpm dev` starts the local development server.
+- `pnpm check` runs Svelte and TypeScript checks.
+- `pnpm lint` runs ESLint.
+- `pnpm test` runs calculator tests with Vitest.
+- `pnpm build` creates the static site in `build/`.
+- `pnpm preview` serves the production build locally.
 
-## Notes
+The repository pins pnpm 11.5.2, rejects unreviewed dependency build scripts,
+and waits seven days before accepting newly published package versions.
 
-Application code lives in `src/`. The `suygar/` directory is an older standalone prototype/reference and is intentionally ignored by production linting and formatting.
+## GitHub Pages
 
-## GitHub Pages Deployment
-
-The repository includes `.github/workflows/deploy.yml`. On pushes to `main`, GitHub Actions installs dependencies, checks formatting, lints, runs tests, builds the Vite app, uploads `dist/`, and deploys it to GitHub Pages.
-
-In GitHub, set **Settings > Pages > Build and deployment > Source** to **GitHub Actions**.
-
-The Vite asset base is set automatically for project Pages URLs like `https://OWNER.github.io/sugarmix-web/`. If the site is deployed at a custom root path, set `VITE_BASE_PATH` in the workflow build step.
+The workflow in `.github/workflows/deploy.yml` builds and deploys on pushes to
+`main`. The SvelteKit base path is derived from `GITHUB_REPOSITORY`, so project
+Pages URLs such as `https://OWNER.github.io/sugarmix-web/` work without a
+hard-coded repository name.

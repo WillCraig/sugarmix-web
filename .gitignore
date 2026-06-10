@@ -10,7 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
 *.local
+
+# SvelteKit
+.svelte-kit
+vite.config.ts.timestamp-*
 
 # Editor directories and files
 .vscode/*

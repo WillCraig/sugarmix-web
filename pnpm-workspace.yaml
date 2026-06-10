@@ -1,0 +1,6 @@
+minimumReleaseAge: 10080
+strictDepBuilds: true
+verifyDepsBeforeRun: error
+
+allowBuilds:
+  esbuild: true
