@@ -13,6 +13,18 @@
   export let copyState: 'idle' | 'copied' | 'failed';
   export let oncopy: () => void;
 
+  $: isPerHourConcentrate =
+    input.mode === 'ride' && drinkType === 'concentrate';
+  $: dissolveShortfallMl = Math.max(
+    0,
+    result.minimumPerBottleVolumeMl - result.bottleVolumeMl,
+  );
+  $: recipeWaterLabel =
+    isPerHourConcentrate && result.overLimit ? 'Needs at least' : 'Top up to';
+  $: recipeWaterVolumeMl =
+    isPerHourConcentrate && result.overLimit
+      ? result.minimumPerBottleVolumeMl
+      : result.bottleVolumeMl;
   $: bottleHeading =
     result.bottleCount === 1
       ? `For one ${result.bottleVolumeMl} ml bottle`
@@ -42,7 +54,30 @@
     </div>
   </div>
 
-  {#if result.overLimit}
+  {#if isPerHourConcentrate}
+    <div
+      class={`recommendation dissolve-check ${result.overLimit ? 'over' : 'fits'}`}
+    >
+      <b>
+        {result.overLimit
+          ? 'Needs more water to dissolve'
+          : `Fits in ${result.bottleVolumeMl} ml`}
+      </b>
+      <span>
+        {#if result.overLimit}
+          Use at least {result.minimumPerBottleVolumeMl} ml final volume per bottle.
+          The {result.bottleVolumeMl} ml bottle is short by
+          {dissolveShortfallMl} ml.
+          {#if result.bottleCount > 1}
+            That is {result.minimumVolumeMl} ml total across
+            {result.bottleCount} bottles.
+          {/if}
+        {:else}
+          This stays within the 900 g/L target for a {result.bottleVolumeMl} ml bottle.
+        {/if}
+      </span>
+    </div>
+  {:else if result.overLimit}
     <div class="recommendation">
       <b>Give this mix more space</b>
       <span>
@@ -83,8 +118,8 @@
       <div>
         <span class="recipe-icon water"><Icon name="drop" size={26} /></span>
         <p>
-          <span>Top up to</span>
-          <strong>{result.bottleVolumeMl}<small>ml</small></strong>
+          <span>{recipeWaterLabel}</span>
+          <strong>{recipeWaterVolumeMl}<small>ml</small></strong>
         </p>
       </div>
     </div>

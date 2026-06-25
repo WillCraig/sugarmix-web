@@ -34,6 +34,7 @@ export interface CalculatorResult {
   drinkLabel: string;
   drinkNote: string;
   minimumVolumeMl: number;
+  minimumPerBottleVolumeMl: number;
   minimumBottleCount: number;
   totalSodiumMg: number;
   totalSaltGrams: number;
@@ -184,6 +185,11 @@ export function calculate(input: CalculatorInput): CalculatorResult {
   const minimumVolumeRaw =
     totalCarbs > 0 ? (totalCarbs / MAX_PRACTICAL_CONCENTRATION) * 1000 : 0;
   const minimumVolumeMl = ceilTo(minimumVolumeRaw, 10);
+  const minimumPerBottleVolumeRaw =
+    perBottleCarbs > 0
+      ? (perBottleCarbs / MAX_PRACTICAL_CONCENTRATION) * 1000
+      : 0;
+  const minimumPerBottleVolumeMl = ceilTo(minimumPerBottleVolumeRaw, 10);
   const minimumBottleCount = Math.max(
     1,
     Math.ceil(minimumVolumeRaw / bottleVolumeMl),
@@ -208,6 +214,7 @@ export function calculate(input: CalculatorInput): CalculatorResult {
     mixStatus: getMixStatus(concentration),
     ...getDrinkContext(input.drinkType, concentration),
     minimumVolumeMl,
+    minimumPerBottleVolumeMl,
     minimumBottleCount,
     totalSodiumMg: round(totalSodiumMg),
     totalSaltGrams: round(totalSaltGrams, 2),
@@ -232,6 +239,13 @@ export function createRecipeText(
   input: CalculatorInput,
   result: CalculatorResult,
 ): string {
+  const finalVolumeLine =
+    result.overLimit &&
+    input.mode === 'ride' &&
+    input.drinkType === 'concentrate'
+      ? `Needs at least ${result.minimumPerBottleVolumeMl} ml final volume per bottle to dissolve within the 900 g/L target`
+      : `Top up each bottle to ${result.bottleVolumeMl} ml final volume`;
+
   const lines = [
     'SugarMix recipe',
     `${result.bottleCount} × ${result.bottleVolumeMl} ml bottle${
@@ -239,7 +253,7 @@ export function createRecipeText(
     }`,
     `${result.perBottleCarbs} g table sugar per bottle`,
     `${result.totalCarbs} g table sugar total`,
-    `Top up each bottle to ${result.bottleVolumeMl} ml final volume`,
+    finalVolumeLine,
     `${result.concentration} g/L · ${result.mixStatus.shortLabel}`,
   ];
 

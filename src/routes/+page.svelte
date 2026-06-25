@@ -18,6 +18,7 @@
   import ResultPanel from '$lib/components/ResultPanel.svelte';
 
   const STORAGE_KEY = 'sugarmix-settings-v1';
+  const PER_HOUR_CONCENTRATE_BOTTLE_VOLUME_ML = 200;
 
   let mode: CalculatorMode = 'ride';
   let drinkType: DrinkType = 'concentrate';
@@ -34,7 +35,24 @@
   let copyState: 'idle' | 'copied' | 'failed' = 'idle';
   let copyTimer: ReturnType<typeof setTimeout> | undefined;
 
+  $: isPerHourConcentrate = mode === 'ride' && drinkType === 'concentrate';
+  $: effectiveBottleVolumeMl = isPerHourConcentrate
+    ? PER_HOUR_CONCENTRATE_BOTTLE_VOLUME_ML
+    : bottleVolumeMl;
   $: input = {
+    mode,
+    drinkType,
+    carbsPerHour,
+    durationMinutes,
+    carbsPerBottle,
+    bottleVolumeMl: effectiveBottleVolumeMl,
+    bottleCount,
+    sodiumEnabled,
+    sodiumMgPerL,
+    citrusEnabled,
+    citrusMlPerBottle,
+  } satisfies CalculatorInput;
+  $: persistedSettings = {
     mode,
     drinkType,
     carbsPerHour,
@@ -62,7 +80,7 @@
         ];
 
   $: if (hydrated && browser) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(input));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistedSettings));
   }
 
   onMount(() => {
@@ -263,17 +281,30 @@
           />
         {/if}
 
-        <NumberStepper
-          id="bottle-volume"
-          label="Bottle"
-          value={bottleVolumeMl}
-          unit="ml"
-          step={50}
-          minimum={50}
-          maximum={5000}
-          icon="bottle"
-          onchange={(value) => (bottleVolumeMl = value)}
-        />
+        {#if isPerHourConcentrate}
+          <div class="locked-field" aria-label="Bottle, 200 ml">
+            <div class="field-identity">
+              <span class="field-icon"><Icon name="bottle" size={25} /></span>
+              <span class="field-label">Bottle</span>
+            </div>
+            <div class="locked-control">
+              <strong>{PER_HOUR_CONCENTRATE_BOTTLE_VOLUME_ML}</strong>
+              <span>ml</span>
+            </div>
+          </div>
+        {:else}
+          <NumberStepper
+            id="bottle-volume"
+            label="Bottle"
+            value={bottleVolumeMl}
+            unit="ml"
+            step={50}
+            minimum={50}
+            maximum={5000}
+            icon="bottle"
+            onchange={(value) => (bottleVolumeMl = value)}
+          />
+        {/if}
         <NumberStepper
           id="bottle-count"
           label="Bottles"

@@ -60,7 +60,21 @@ describe('calculate', () => {
     expect(result.totalCarbs).toBe(300);
     expect(result.concentration).toBe(1200);
     expect(result.minimumVolumeMl).toBe(340);
+    expect(result.minimumPerBottleVolumeMl).toBe(340);
     expect(result.minimumBottleCount).toBe(2);
+    expect(result.overLimit).toBe(true);
+  });
+
+  it('reports the minimum dissolve volume per bottle', () => {
+    const result = calculate({
+      ...baseInput,
+      bottleVolumeMl: 200,
+    });
+
+    expect(result.totalCarbs).toBe(225);
+    expect(result.concentration).toBe(1125);
+    expect(result.minimumVolumeMl).toBe(250);
+    expect(result.minimumPerBottleVolumeMl).toBe(250);
     expect(result.overLimit).toBe(true);
   });
 
@@ -132,5 +146,18 @@ describe('recipe copy', () => {
     expect(text).toContain('Top up each bottle to 250 ml final volume');
     expect(text).toContain('table salt per bottle');
     expect(text).toContain('lemon/lime juice per bottle');
+  });
+
+  it('uses required dissolve volume for over-limit per-hour concentrate recipes', () => {
+    const input: CalculatorInput = {
+      ...baseInput,
+      bottleVolumeMl: 200,
+    };
+    const text = createRecipeText(input, calculate(input));
+
+    expect(text).toContain(
+      'Needs at least 250 ml final volume per bottle to dissolve',
+    );
+    expect(text).not.toContain('Top up each bottle to 200 ml final volume');
   });
 });
